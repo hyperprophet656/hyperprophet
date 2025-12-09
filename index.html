@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYPERPROPHET</title>
+    
+    <!-- Подключение Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Подключение React и ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    
+    <!-- Babel для запуска JSX в браузере -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Дополнительные стили анимации -->
+    <style>
+        @keyframes blob {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+        .perspective-1000 {
+          perspective: 1000px;
+        }
+
+        /* Text Glitch Animation */
+        @keyframes glitch {
+          0% { clip-path: inset(40% 0 61% 0); transform: translate(-2px, 2px); }
+          20% { clip-path: inset(92% 0 1% 0); transform: translate(2px, 0px); }
+          40% { clip-path: inset(43% 0 1% 0); transform: translate(-2px, -2px); }
+          60% { clip-path: inset(25% 0 58% 0); transform: translate(2px, 2px); }
+          80% { clip-path: inset(54% 0 7% 0); transform: translate(-2px, 0px); }
+          100% { clip-path: inset(58% 0 43% 0); transform: translate(2px, -2px); }
+        }
+        
+        .glitch-text {
+          position: relative;
+        }
+        .glitch-text::before,
+        .glitch-text::after {
+          content: attr(data-text);
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: black;
+        }
+        .glitch-text::before {
+          left: 2px;
+          text-shadow: -1px 0 #00ffff;
+          clip-path: inset(0 0 0 0);
+          animation: glitch 3s infinite linear alternate-reverse;
+          background: transparent;
+        }
+        .glitch-text::after {
+          left: -2px;
+          text-shadow: -1px 0 #ff00ff;
+          clip-path: inset(0 0 0 0);
+          animation: glitch 2s infinite linear alternate-reverse;
+          background: transparent;
+        }
+
+        /* Content Reveal Glitch Animation */
+        @keyframes glitch-in {
+            0% { opacity: 0; transform: translate(-10px, 0) skew(20deg); clip-path: inset(0 0 100% 0); filter: blur(4px); }
+            20% { opacity: 1; transform: translate(10px, 0) skew(-20deg); clip-path: inset(0 0 0 0); }
+            40% { transform: translate(-5px, 0) skew(10deg); filter: blur(0px); }
+            60% { transform: translate(5px, 0) skew(-5deg); }
+            80% { transform: translate(-2px, 0) skew(2deg); }
+            100% { opacity: 1; transform: translate(0, 0) skew(0); }
+        }
+        .animate-glitch-in {
+            animation: glitch-in 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+        }
+
+        /* Heavy Card Glitch (Decryption Effect) */
+        @keyframes heavy-glitch {
+            0% { transform: translate(0) skew(0deg); filter: none; }
+            15% { transform: translate(-10px, 5px) skew(10deg); filter: hue-rotate(90deg) contrast(2) invert(0.2); }
+            30% { transform: translate(10px, -5px) skew(-10deg); filter: hue-rotate(-90deg) contrast(1.5); }
+            50% { transform: translate(-5px, 0) skew(5deg); filter: invert(0.8); }
+            70% { transform: translate(5px, 0) skew(-5deg); filter: hue-rotate(45deg); }
+            85% { transform: translate(0) skew(0deg); filter: none; opacity: 0.8; }
+            100% { transform: translate(0) skew(0deg); filter: none; opacity: 1; }
+        }
+        .animate-heavy-glitch {
+            animation: heavy-glitch 0.4s ease-out both;
+        }
+
+        /* Wake Up Text Animation */
+        @keyframes text-flicker {
+            0% { opacity: 0.1; }
+            5% { opacity: 1; text-shadow: 0 0 10px red; }
+            10% { opacity: 0.1; }
+            15% { opacity: 1; text-shadow: 0 0 20px red; }
+            100% { opacity: 0.8; }
+        }
+        .wakeup-text {
+            animation: text-flicker 0.2s infinite alternate;
+        }
+
+        /* Liquid Glass Style */
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.5);
+            border-left: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                inset 0 0 20px rgba(255, 255, 255, 0.1),
+                inset 0 0 5px rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Highlight Reflection */
+        .liquid-glass::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%);
+            border-radius: inherit;
+            pointer-events: none;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body class="bg-black text-white">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- Icons ---
+        const XLogo = ({ className }) => (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+          </svg>
+        );
+
+        // --- Wake Up Overlay ---
+        const WakeUpOverlay = ({ active }) => {
+            if (!active) return null;
+            
+            const wakeUpItems = Array.from({ length: 50 }).map((_, i) => ({
+                id: i,
+                left: `${Math.random() * 90}%`,
+                top: `${Math.random() * 90}%`,
+                scale: 0.5 + Math.random() * 2,
+                delay: Math.random() * 0.5
+            }));
+
+            return (
+                <div className="fixed inset-0 z-[100] pointer-events-none overflow-hidden mix-blend-hard-light">
+                    {wakeUpItems.map((item) => (
+                        <div 
+                            key={item.id}
+                            className="wakeup-text absolute font-black text-red-600 tracking-widest whitespace-nowrap"
+                            style={{
+                                left: item.left,
+                                top: item.top,
+                                transform: `scale(${item.scale}) rotate(${Math.random() * 10 - 5}deg)`,
+                                fontSize: '2rem',
+                                animationDelay: `${item.delay}s`
+                            }}
+                        >
+                            WAKE UP
+                        </div>
+                    ))}
+                    <div className="absolute inset-0 bg-red-900/20 mix-blend-overlay"></div>
+                </div>
+            );
+        };
+
+        // --- Effects Components ---
+        const NoiseOverlay = () => (
+          <div className="pointer-events-none fixed inset-0 z-40 h-full w-full opacity-[0.12]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+              <filter id="noiseFilter">
+                <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch" />
+              </filter>
+              <rect width="100%" height="100%" filter="url(#noiseFilter)" />
+            </svg>
+          </div>
+        );
+
+        const GlowingBackground = ({ theme }) => {
+          const getColors = () => {
+            switch(theme) {
+              case 'wakeup':
+                return {
+                    blob1: 'bg-red-600',
+                    blob2: 'bg-red-700',
+                    blob3: 'bg-red-900',
+                    blob4: 'bg-orange-900'
+                };
+              case 'whitewhale':
+                return {
+                  blob1: 'bg-cyan-600/50',
+                  blob2: 'bg-blue-600/40',
+                  blob3: 'bg-purple-600/40',
+                  blob4: 'bg-indigo-500/40'
+                };
+              case 'joker':
+                return {
+                  blob1: 'bg-green-600/50',
+                  blob2: 'bg-yellow-500/40',
+                  blob3: 'bg-orange-600/40',
+                  blob4: 'bg-red-500/40'
+                };
+              default:
+                return {
+                  blob1: 'bg-cyan-500/40', 
+                  blob2: 'bg-yellow-400/30',
+                  blob3: 'bg-green-500/20', 
+                  blob4: 'bg-blue-600/30'
+                };
+            }
+          };
+
+          const colors = getColors();
+
+          return (
+            <div className="fixed inset-0 z-0 overflow-hidden bg-black transition-colors duration-200">
+              <div className={`absolute -left-20 top-0 h-[600px] w-[600px] animate-pulse rounded-full ${colors.blob1} blur-[120px] mix-blend-screen transition-colors duration-500 ease-in-out md:-left-40 md:-top-20`} />
+              <div className={`absolute -right-20 top-20 h-[500px] w-[500px] animate-pulse rounded-full ${colors.blob2} blur-[120px] mix-blend-screen transition-colors duration-500 ease-in-out md:-right-40`} />
+              <div className={`absolute bottom-0 left-1/2 h-[600px] w-[800px] -translate-x-1/2 rounded-full ${colors.blob3} blur-[130px] mix-blend-screen transition-colors duration-500`} />
+              <div className={`animate-blob absolute left-1/4 top-1/3 h-96 w-96 rounded-full ${colors.blob4} blur-[100px] transition-colors duration-500`} />
+            </div>
+          );
+        };
+
+        const GlitchText = ({ text, subtext, onMouseEnter, onMouseLeave }) => {
+          return (
+            <div className="relative z-50 flex flex-col items-center justify-center py-20 text-center">
+              <h1 
+                className="glitch-text font-black tracking-tighter text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] text-6xl md:text-8xl lg:text-9xl cursor-crosshair hover:scale-105 transition-transform duration-100"
+                data-text={text}
+                onMouseEnter={onMouseEnter}
+                onMouseLeave={onMouseLeave}
+              >
+                {text}
+              </h1>
+              <h2 className="mt-4 font-mono text-xl tracking-[0.5em] text-green-400 drop-shadow-[0_0_10px_rgba(74,222,128,0.8)] md:text-2xl animate-pulse pointer-events-none">
+                {subtext}
+              </h2>
+            </div>
+          );
+        };
+
+        const ProjectCard = ({ title, description, link, xLink, imageSrc, colorClass, isOpen, onClick, onMouseEnter, onMouseLeave }) => {
+          const [isGlitching, setIsGlitching] = useState(false);
+
+          useEffect(() => {
+            if (isOpen) {
+              setIsGlitching(true);
+              const timer = setTimeout(() => setIsGlitching(false), 400);
+              return () => clearTimeout(timer);
+            }
+          }, [isOpen]);
+
+          return (
+            <div 
+              onClick={onClick}
+              onMouseEnter={onMouseEnter}
+              onMouseLeave={onMouseLeave}
+              className={`
+                group relative w-full h-[450px] cursor-pointer
+                transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]
+                perspective-1000
+                ${isGlitching ? 'animate-heavy-glitch' : ''}
+              `}
+            >
+              {/* Liquid Glass Container */}
+              <div className={`
+                liquid-glass h-full w-full rounded-[3rem] p-3
+                transition-all duration-500 hover:shadow-[0_0_50px_rgba(255,255,255,0.2)]
+                ${isOpen ? 'bg-black/80' : ''}
+              `}>
+
+                {/* Scratches Texture (SVG filter applied) */}
+                <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-overlay z-10">
+                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                        <filter id="scratchesFilter">
+                            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" result="noise"/>
+                            <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+                        </filter>
+                        <rect width="100%" height="100%" filter="url(#scratchesFilter)" fill="transparent" stroke="white" strokeWidth="2"/>
+                    </svg>
+                </div>
+
+                {/* Inner Image Container (Capsule) */}
+                <div className={`
+                    relative h-full w-full overflow-hidden rounded-[2.5rem] bg-black/40 shadow-inner
+                    transition-all duration-700
+                    ${isOpen ? 'opacity-30 blur-sm scale-95' : 'opacity-100 scale-100'}
+                `}>
+                    <img src={imageSrc} alt={title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <div className={`absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-50`} />
+                    
+                    {/* Sticker/Label inside the capsule */}
+                    <div className={`
+                        absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-black/60 border border-white/10 backdrop-blur-md
+                        transform transition-all duration-500
+                        ${isOpen ? 'translate-y-20 opacity-0' : 'translate-y-0 opacity-100'}
+                    `}>
+                        <div className={`h-1 w-12 mb-2 bg-gradient-to-r ${colorClass}`} />
+                        <h3 className="text-2xl font-black uppercase tracking-tighter text-white drop-shadow-lg">{title}</h3>
+                        <p className="mt-1 text-xs text-gray-400 font-mono tracking-widest uppercase opacity-80">
+                            [Click to decrypt]
+                        </p>
+                    </div>
+                </div>
+
+                {/* Open State Content (Details) - Glitch Reveal */}
+                {isOpen && (
+                    <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12 animate-glitch-in z-20 pointer-events-none">
+                         <div className="mb-auto mt-4 pointer-events-auto">
+                            <h3 className={`text-3xl font-black uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r ${colorClass} mb-6`}>
+                                {title}
+                            </h3>
+                            <p className="text-gray-200 leading-relaxed font-light text-lg md:text-xl border-l-2 border-white/30 pl-4">
+                                {description}
+                            </p>
+                         </div>
+                        
+                        <div className="flex flex-col gap-4 pointer-events-auto">
+                            <a 
+                                href={link} 
+                                target="_blank" 
+                                rel="noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="w-full text-center py-4 bg-white text-black font-black uppercase tracking-widest hover:bg-cyan-400 hover:text-white hover:shadow-[0_0_20px_rgba(0,255,255,0.6)] transition-all duration-200 clip-path-polygon"
+                                style={{ clipPath: 'polygon(0 0, 100% 0, 95% 100%, 5% 100%)' }}
+                            >
+                                Enter Site
+                            </a>
+                            <a 
+                                href={xLink} 
+                                target="_blank" 
+                                rel="noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="w-full flex justify-center items-center gap-2 py-4 border border-white/30 text-white font-bold uppercase tracking-widest hover:bg-white/10 hover:border-white transition-all duration-200"
+                            >
+                                <XLogo className="h-5 w-5" />
+                                Follow
+                            </a>
+                        </div>
+                    </div>
+                )}
+                
+                {/* Glitch Overlay Lines (Decorative) */}
+                <div className="absolute top-0 left-0 w-full h-1 bg-white/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse z-30" />
+                <div className="absolute bottom-0 right-0 w-full h-1 bg-white/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse z-30" />
+              </div>
+            </div>
+          );
+        };
+
+        function App() {
+          const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+          const [activeTheme, setActiveTheme] = useState('default');
+          const [openProjectId, setOpenProjectId] = useState(null); // 'whitewhale' or 'joker' or null
+
+          useEffect(() => {
+            const updateMousePosition = (e) => {
+              setMousePosition({ x: e.clientX, y: e.clientY });
+            };
+            window.addEventListener('mousemove', updateMousePosition);
+            return () => window.removeEventListener('mousemove', updateMousePosition);
+          }, []);
+
+          // Theme logic: 
+          // 1. WAKE UP override (highest priority)
+          // 2. Hover active theme (if hovering a project)
+          // 3. Open project theme (if clicked)
+          // 4. Default
+          const currentTheme = activeTheme === 'wakeup' ? 'wakeup' : (activeTheme !== 'default' ? activeTheme : (openProjectId || 'default'));
+
+          const handleProjectClick = (id) => {
+              if (openProjectId === id) {
+                  setOpenProjectId(null);
+              } else {
+                  setOpenProjectId(id);
+              }
+          };
+
+          return (
+            <div className="relative min-h-screen w-full bg-black font-sans text-white selection:bg-red-500 selection:text-white overflow-x-hidden">
+              
+              <GlowingBackground theme={currentTheme} />
+              <WakeUpOverlay active={activeTheme === 'wakeup'} />
+              <NoiseOverlay />
+              
+              <div 
+                className="pointer-events-none fixed z-30 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/10 blur-[80px] mix-blend-overlay"
+                style={{ left: mousePosition.x, top: mousePosition.y }}
+              />
+
+              <main className="relative z-50 mx-auto max-w-7xl px-4 pb-32 pt-12 md:px-8">
+                
+                <header className="mb-32 flex flex-col items-center animate-in fade-in zoom-in duration-1000">
+                  <GlitchText 
+                    text="HYPERPROPHET" 
+                    subtext="NOTARIOUS DEV" 
+                    onMouseEnter={() => setActiveTheme('wakeup')}
+                    onMouseLeave={() => setActiveTheme('default')}
+                  />
+                  
+                  <div className="mt-10">
+                    <a href="https://x.com/HyperProphet" target="_blank" rel="noreferrer" className="group relative inline-block">
+                      <div className="absolute inset-0 rotate-3 rounded-xl bg-gradient-to-r from-green-400 to-blue-600 opacity-50 blur transition-all duration-300 group-hover:rotate-6 group-hover:opacity-75"></div>
+                      <div className="relative -rotate-2 rounded-xl border border-white/20 bg-white/5 px-8 py-4 backdrop-blur-sm transition-all duration-300 group-hover:-rotate-1 group-hover:bg-white/10 group-hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                        <div className="flex items-center gap-3 font-mono text-lg font-bold tracking-widest text-white">
+                          <XLogo className="h-6 w-6" />
+                          <span>@HYPERPROPHET</span>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                </header>
+
+                {/* Projects Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+                  
+                  <div className="animate-in slide-in-from-bottom duration-1000 delay-300 fill-mode-backwards">
+                    <ProjectCard 
+                      title="The White Whale"
+                      description="Website for memecoin launched on PumpFun and CTO-ed by famous trader The White Whale."
+                      link="https://whitewhalememe.com/"
+                      xLink="https://x.com/TheWhiteWhaleV2"
+                      imageSrc="/images/1.png"
+                      colorClass="from-cyan-400 via-blue-500 to-purple-600"
+                      isOpen={openProjectId === 'whitewhale'}
+                      onClick={() => handleProjectClick('whitewhale')}
+                      onMouseEnter={() => setActiveTheme('whitewhale')}
+                      onMouseLeave={() => setActiveTheme('default')}
+                    />
+                  </div>
+
+                  <div className="animate-in slide-in-from-bottom duration-1000 delay-500 fill-mode-backwards">
+                    <ProjectCard 
+                      title="Paul Miller Store"
+                      description="Merch Store with main payment option in $JOKER for famous livestreamer Paul Miller."
+                      link="https://jokercoinmerch.com/"
+                      xLink="https://x.com/jokerwaffenfren"
+                      imageSrc="/images/2.png"
+                      colorClass="from-green-400 via-yellow-400 to-orange-500"
+                      isOpen={openProjectId === 'joker'}
+                      onClick={() => handleProjectClick('joker')}
+                      onMouseEnter={() => setActiveTheme('joker')}
+                      onMouseLeave={() => setActiveTheme('default')}
+                    />
+                  </div>
+
+                </div>
+
+                <footer className="mt-40 text-center">
+                  <p className="text-xs uppercase tracking-[0.3em] text-white/30 hover:text-white/80 transition-colors cursor-default">
+                    © {new Date().getFullYear()} Hyperprophet // Dev
+                  </p>
+                </footer>
+
+              </main>
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
